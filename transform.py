@@ -12,10 +12,11 @@ def append_to_line(csv_file, complete_line, column_value, value_index):
         write_line(csv_file, complete_line)
         complete_line = []
 
-    formated_value = format_column_value(index, column_value)
     if (value_index == 0) and (0 < index < 4):
+        formated_value = format_column_value(index-1, column_value)
         complete_line[-1] += " " + formated_value
     else:
+        formated_value = format_column_value(index, column_value)
         complete_line.append(formated_value)
 
     return complete_line
