@@ -16,16 +16,18 @@ def format_column_value(row_length, value):
 
 def main():
     tsv_file_name = "datos_data_engineer.tsv"
-    csv_file = "datos_data_engineer.csv"
+    csv_file_name = "datos_data_engineer.csv"
 
     lines = (line for line in io.open(tsv_file_name, mode="r", encoding="utf-16-le"))
     lines_values = (line.rstrip().split('\t') for line in lines)
 
     header = next(lines_values)
+    formatted_header = '|'.join(header).encode("utf-8")
 
-    # for i, line in enumerate(lines_values):
-    #     if len(line) != 5:
-    #         print line
+    csv_file = open(csv_file_name, "wb")
+
+    csv_file.write(formatted_header)
+    csv_file.write('\n')
 
     row = []
     for line_values  in lines_values:
@@ -38,8 +40,10 @@ def main():
             row_length = len(row)
 
             if row_length == 5:
-                final_row = '|'.join(row)
-                print final_row.encode("utf-8")
+                final_row = '|'.join(row).encode("utf-8")
+                print final_row
+                csv_file.write(final_row)
+                csv_file.write('\n')
                 row = []
             
             if (1 < row_length < 4) and (index == 0) and (not value.isnumeric()):
@@ -53,8 +57,10 @@ def main():
     row_length = len(row)
 
     if row_length == 5:
-        final_row = '|'.join(row)
-        print final_row.encode("utf-8")
+        final_row = '|'.join(row).encode("utf-8")
+        print final_row
+        csv_file.write(final_row)
+        csv_file.write('\n')
         row = []
 
 
