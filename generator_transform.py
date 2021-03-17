@@ -4,8 +4,8 @@ import re
 
 def format_column_value(row_length, value):
     """
-    Formatea los valores de cada columna excluyendo 
-    caracteres que no tienen sentido segun el campo
+    Devuelve cada valor que corresponda a una columna formateado
+    eliminando los caracteres que no deberian estar segun el campo
     """
     if row_length in [0,3]:
         return re.sub('[^0-9]', '', value)
@@ -17,7 +17,7 @@ def format_column_value(row_length, value):
 
 def process_header(header):
     """
-    Damos formato al header de nuestro CSV
+    Devuelve el header del archivo TSV formateado
     """
     return '|'.join(header).encode("utf-8")
 
@@ -33,7 +33,7 @@ def get_tsv_data(tsv_file_name):
 
 def process_data(lines_values):
     """
-    Procesamos cada valor de cada una de las filas de un generador
+    Devuelve un generador con cada fila procesada
     """
     row = []
     for line_values  in lines_values:
