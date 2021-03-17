@@ -1,6 +1,6 @@
 import re
 
-def append_to_line(csv_file, complete_line, column_value, value_index):
+def append_to_line(formatted_data, complete_line, column_value, value_index):
     """
     Se formatea un valor de una columna y se agrega a la fila que se esta procesando
     para ser escrita en el CSV.
@@ -9,7 +9,7 @@ def append_to_line(csv_file, complete_line, column_value, value_index):
 
     index = len(complete_line)
     if (index == 5):
-        write_line(csv_file, complete_line)
+        append_line(formatted_data, complete_line)
         complete_line = []
 
     if (value_index == 0) and (0 < index < 4):
@@ -40,7 +40,7 @@ def get_csv(file_name):
     return open(file_name, "wb")
 
 
-def get_formatted_data(file_name):
+def get_preformatted_data(file_name):
     """
     La funcion realizara el primer formateo general al archivo TSV
     Quitaremos los espacios, reemplazaremos las tabulaciones por un pipe
@@ -63,22 +63,34 @@ def get_formatted_data(file_name):
     return header, data
 
 
-def process_data(csv_file, data):
+def process_values(data):
 
+    formatted_data = []
     complete_line = []
     for line in data:
         for value_index, column_value in enumerate(line.split('|')):
-            complete_line = append_to_line(csv_file, complete_line, column_value, value_index)
+            complete_line = append_to_line(formatted_data, complete_line, column_value, value_index)
 
-    append_to_line(csv_file, complete_line, "", 0)
+    append_to_line(formatted_data, complete_line, "", 0)
+
+    return formatted_data
 
 
-def write_line(csv_file, complete_line):
+def append_line(formatted_data, complete_line):
+    """
+    Agregamos la linea formateada a nuestros datos formateados
+    """
+    formatted_data.append('|'.join(complete_line).encode("utf-8"))
+    return formatted_data
+
+
+def write_lines(csv_file, formatted_data):
     """
     Escribimos en el archivo CSV
     """
-    csv_file.write('|'.join(complete_line).encode("utf-8"))
-    csv_file.write('\n'.encode("utf-8"))
+    for line in formatted_data:
+        csv_file.write(line)
+        csv_file.write('\n'.encode("utf-8"))
 
 
 def write_header(csv_file, header):
@@ -89,14 +101,18 @@ def write_header(csv_file, header):
 def main():
 
     # Formateamos y conseguimos el header y la data por separado
-    header, data = get_formatted_data("datos_data_engineer.tsv")
+    header, data = get_preformatted_data("datos_data_engineer.tsv")
 
     # Creamos nuestro CSV y escribimos el header
     csv_file = get_csv("datos_data_engineer.csv")
+
     write_header(csv_file, header)
 
     # Procesamos y formateamos la data
-    process_data(csv_file, data)
+    formatted_data = process_values(data)
+
+    # Escribimos en nuestro CSV
+    write_lines(csv_file, formatted_data)
 
     csv_file.close()
 
